@@ -35,7 +35,7 @@ local eggChances = {
     ["Premium Night Egg"] = {["Hedgehog"] = 50, ["Mole"] = 26, ["Frog"] = 14, ["Echo Frog"] = 10},
     ["Dinosaur Egg"] = {["Raptor"] = 33, ["Triceratops"] = 33, ["T-Rex"] = 1, ["Stegosaurus"] = 33, ["Pterodactyl"] = 33, ["Brontosaurus"] = 33},
     ["Primal Egg"] = { ["Parasaurolophus"] = 35, ["Iguanodon"] = 32.5, ["Pachycephalosaurus"] = 28, ["Dilophosaurus"] = 3, ["Ankylosaurus"] = 1, ["Spinosaurus"] = 0.5 },
-    ["Zen Egg"] = { ["Shiba Inu"] = 33, ["Nihonnizaru"] = 33, ["Tanuki"] = 28, ["Tanchozuru"] = 3.5, ["Kappa"] = 1, ["Kitsune"] = 0.5 } -- Corrected Tanchozuru, Kappa, Kitsune to sum to 100
+    ["Zen Egg"] = { ["Shiba Inu"] = 33, ["Nihonnizaru"] = 33, ["Tanuki"] = 28, ["Tanchozuru"] = 23, ["Kappa"] = 3.5, ["Kitsune"] = 1 } -- Using user-provided percentages
 }
 
 -- Eggs for which ESP is considered "real" (always show egg name, not random pet)
@@ -269,7 +269,7 @@ madeByLabel.ZIndex = 5 -- Ensure this is high in the header
 -- Main Frame (Contains buttons)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 250, 0, 110) -- Adjusted size for 2 buttons + padding
+mainFrame.Size = UDim2.new(0, 250, 0, 130) -- Adjusted size to fit buttons + padding (10+50+10+50+10 = 130)
 -- Position relative to ScreenGui, directly below headerFrame (NO GAP)
 mainFrame.Position = UDim2.new(headerFrame.Position.X.Scale, headerFrame.Position.X.Offset, 0, headerFrame.Position.Y.Offset + headerFrame.Size.Y.Offset) -- No gap
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Darker background
@@ -405,14 +405,17 @@ local espToggleBtn = createStyledButton("ESP: ON", mainFrame, function()
     print("Pet Randomizer Script: ESP toggled to:", espOn, "Button text updated to:", espToggleBtn.Text)
 
     -- Iterate through all currently displayed ESPs and update their Enabled state
+    local espCount = 0
     for objectId, data in pairs(displayedEggs) do
+        espCount = espCount + 1
         if data.gui then
             data.gui.Enabled = espOn -- Enable/Disable the BillboardGui itself
-            print("Pet Randomizer Script: Set ESP GUI Enabled to", espOn, "for egg ID:", objectId)
+            print("Pet Randomizer Script: Set ESP GUI Enabled to", espOn, "for egg ID:", objectId, "Egg Name:", data.eggName)
         else
-            warn("Pet Randomizer Script: WARN - ESP GUI not found for egg ID:", objectId, "in displayedEggs during toggle.")
+            warn("Pet Randomizer Script: WARN - ESP GUI not found for egg ID:", objectId, "in displayedEggs during toggle. Egg Name:", data.eggName)
         end
     end
+    print("Pet Randomizer Script: DEBUG: Finished iterating through", espCount, "displayedEggs for ESP toggle.")
 
     if espOn then
         print("Pet Randomizer Script: ESP is ON. Re-checking and re-enabling ESP for existing eggs that might have been missed.")
